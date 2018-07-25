@@ -2,6 +2,7 @@ package encryption_algorithms;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class PlayFairCipherEncryption {
 
@@ -20,18 +21,22 @@ public class PlayFairCipherEncryption {
      * @param args
      */
 
-    private final char[] mKeyMatrix = new char[25];
-    private final char[][] mFinalKeyMatrix = new char[5][5];
-    private char[] mPlainTextArray;
+
     private Scanner mScanner;
-    private String mKey;
+
+    private final char[] mKeyMatrix = new char[25];
+    private final char[] mAlphabets = "abcdefghiklmnopqrstuvwxyz".toCharArray();
+    private final char[][] mFinalKeyMatrix = new char[5][5];
+
     private ArrayList<Character> mAlphabetDictionary = new ArrayList<>();
     private ArrayList<Character> mKeyMatrixList = new ArrayList<>();
-    char[] mAlphabets = "abcdefghiklmnopqrstuvwxyz".toCharArray();
+
+    private String mKey;
     private String mPlainText;
+    private String mNonRepeatingPlainText;
 
 
-    public PlayFairCipherEncryption(){
+    public PlayFairCipherEncryption() {
         mScanner = new Scanner(System.in);
     }
 
@@ -44,11 +49,17 @@ public class PlayFairCipherEncryption {
 
     }
 
+    /**
+     * This method is used to generate the 5x5 matrix of the given key.
+     *
+     * @param key
+     */
     private void formMatrixOfKey(String key) {
 
         char[] alphabets = key.toCharArray();
         ArrayList<Character> temp = new ArrayList<>();
 
+        //creating an alphabet dictionary arraylist
         for (char alphabet : alphabets) {
             if (mAlphabetDictionary != null) {
                 if (!mAlphabetDictionary.contains(alphabet)) {
@@ -94,41 +105,67 @@ public class PlayFairCipherEncryption {
 
     }
 
-    public void convertPlainTextToCipherText(){
+    /**
+     * This method is used to separate two repeating letters with x.
+     */
+    public void convertPlainTextToCipherText() {
 
-//        mPlainText = mScanner.nextLine();
-        mPlainText = "aaa dss abcd";
+        System.out.println("Enter the plain text: ");
 
-        String plainText = mPlainText.replaceAll("\\s+","");
+        mPlainText = mScanner.nextLine();
 
-        StringBuilder plainTextSb = new StringBuilder(plainText);
+        String formattedPlainText = mPlainText.replaceAll("\\s+", "");
 
-        mPlainTextArray = plainText.toCharArray();
+        StringBuilder formattedPlainTextSb = new StringBuilder(formattedPlainText);
 
 
-        int indexCount = 1;
+        //this is to keep a count of how many x were inserted previously.
+        int indexCount = 0;
 
-        for(int i = 0; i<mPlainTextArray.length;i++){
-            char currentChar = mPlainTextArray[i];
+        for (int i = 0; i < formattedPlainText.length(); i++) {
+
+            char currentChar = formattedPlainText.charAt(i);
             char nextChar = 0;
 
-            if(i+1<mPlainTextArray.length) {
-                nextChar = mPlainTextArray[i + 1];
+            if (i + 1 < formattedPlainText.length()) {
+                nextChar = formattedPlainText.charAt(i + 1);
             }
 
-            if(currentChar == nextChar){
-                plainTextSb.insert(i+indexCount,'x');
+            if (currentChar == nextChar) {
+                formattedPlainTextSb.insert((i + indexCount) + 1, 'x');
                 indexCount++;
 
             }
-
-
-
         }
 
-        System.out.println(plainTextSb.toString());
+        mNonRepeatingPlainText = formattedPlainTextSb.toString();
+        System.out.println("The formatted plain text is: "+mNonRepeatingPlainText);
 
 
+
+    }
+
+    public void generateCipherText(){
+        ArrayList<String> dividedPlainText = getDividedPlainTextArray();
+
+
+
+
+    }
+
+    private ArrayList<String> getDividedPlainTextArray() {
+
+        ArrayList<String> tokens = new ArrayList<>();
+
+        String nonRepeatingPlainText = mNonRepeatingPlainText.replaceAll("(..)", "$1 ");
+
+        StringTokenizer stringTokenizer = new StringTokenizer(nonRepeatingPlainText," ");
+
+        while (stringTokenizer.hasMoreTokens()){
+            tokens.add(stringTokenizer.nextToken());
+        }
+
+        return tokens;
     }
 
 }
